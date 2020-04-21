@@ -25,7 +25,6 @@ export default new Vuex.Store({
     },
 
     getCurrentPlayer(state) {
-      console.log(state.currentPlayer)
       return state.players[state.currentPlayer]
     },
 
@@ -48,6 +47,7 @@ export default new Vuex.Store({
       )
     },
 
+    // this maybe could get broken into new pieces
     endTurn(state, score) {
       let player = state.getCurrentPlyer()
       if (score === 0) {
