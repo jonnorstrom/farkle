@@ -1,28 +1,13 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <b-button @click="newGame()">New Game</b-button>
-    </div>
     <router-view/>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  methods: {
-    ...mapActions(['setGameCode']),
-
-    newGame() {
-      this.setGameCode()
-      this.$router.push(this.getGameCode)
-    }
-  },
-
-  computed: {
-    ...mapGetters(['getGameCode']),
-  }
+  
 }
 </script>
 
