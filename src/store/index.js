@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import randomstring from 'randomstring'
+import Player from './player'
 
 Vue.use(Vuex)
 
@@ -10,27 +11,23 @@ export default new Vuex.Store({
   state: {
     gameCode: '',
     players: [],
-    currentPlayer: 0
+    currentPlayer: 0,
+    gameInProgress: false
   },
 
   getters: {
-    getGameCode(state) {
-      return state.gameCode
-    },
+    getGameCode: state => state.gameCode,
 
-    // https://stackoverflow.com/questions/41503527/vuexjs-getter-with-argument
-    // https://codeburst.io/vuex-getters-are-great-but-dont-overuse-them-9c946689b414
-    getPlayer: (state) => (name) => {
+    gameInProgress: state => state.gameInProgress,
+
+    players: state => state.players,
+
+    currentPlayer: state => state.players[state.currentPlayer],
+
+    // follow this for when getter needs arguments
+    player: (state) => (name) => {
       return state.players.find(player => player.name === name)
     },
-
-    getCurrentPlayer(state) {
-      return state.players[state.currentPlayer]
-    },
-
-    players(state) {
-      return state.players
-    }
   },
 
   mutations: {
@@ -39,25 +36,24 @@ export default new Vuex.Store({
     },
 
     addPlayer(state, name) {
-      state.players.push(
-        { name,
-          score: 0,
-          farkleCount: 0
-        }
-      )
+      state.players.push(new Player(name))
     },
 
-    // this maybe could get broken into new pieces
+    // this should get broken into new pieces
     endTurn(state, score) {
-      let player = state.getCurrentPlyer()
+      let player = state.currentPlayer()
+
       if (score === 0) {
-        if (player.farkleCount === 2) {
+        if (player.farkleCount === 2 && player.onBoardYet) {
           player.score -= 500
           player.farkleCount = 0
         } else {
           player.farkleCount += 1
         }
       } else {
+        if (!player.onBoardYet) {
+          player.onBoardYet = true
+        }
         player.score += score
       }
     }

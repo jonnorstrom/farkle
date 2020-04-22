@@ -3,7 +3,7 @@
     <h1>in the game component</h1>
     <addPlayer></addPlayer>
 
-    <h2>Current Turn: {{getCurrentPlayer.name}}</h2>
+    <h2 v-if="currentPlayer && gameInProgress">Current Turn: {{currentPlayer.name}}</h2>
 
     <ul>
       <li v-for="player in players" v-bind:key="player.name">{{player.name}}</li>
@@ -21,7 +21,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['players', 'getCurrentPlayer'])
+    ...mapGetters(['players', 'currentPlayer', 'gameInProgress'])
   }
 }
 </script>
