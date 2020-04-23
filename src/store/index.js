@@ -9,7 +9,7 @@ export default new Vuex.Store({
   state: {
     gameCode: '',
     players: [],
-    currentPlayer: 0,
+    currentPlayerIndex: 0,
     gameInProgress: false
   },
 
@@ -20,7 +20,7 @@ export default new Vuex.Store({
 
     players: state => state.players,
 
-    currentPlayer: state => state.players[state.currentPlayer],
+    currentPlayer: state => state.players[state.currentPlayerIndex],
 
     // follow this pattern for when getter needs arguments
     player: (state) => (name) => {
@@ -43,7 +43,7 @@ export default new Vuex.Store({
 
     // this should get broken into new pieces
     endTurn(state, score) {
-      let player = state.currentPlayer()
+      let player = this.getters.currentPlayer
 
       if (score === 0) {
         if (player.farkleCount === 2 && player.onBoardYet) {
@@ -59,7 +59,11 @@ export default new Vuex.Store({
         player.score += score
         // check for 10,000 to start 'theFinalRound'
         // check for winner (last person to go in 'theFinalRound')
-        // if above is n/a, move to next player
+
+        state.currentPlayerIndex += 1
+        if (state.currentPlayerIndex >= this.getters.players.length) {
+          state.currentPlayerIndex = 0
+        }
       }
     }
   },
