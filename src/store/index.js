@@ -5,8 +5,6 @@ import Player from './player'
 
 Vue.use(Vuex)
 
-// TODO: if user navigates directly to game room, need to get gameCode
-// from URL and set state's gameCode there - otherwise it's blank
 export default new Vuex.Store({
   state: {
     gameCode: '',
@@ -24,20 +22,24 @@ export default new Vuex.Store({
 
     currentPlayer: state => state.players[state.currentPlayer],
 
-    // follow this for when getter needs arguments
+    // follow this pattern for when getter needs arguments
     player: (state) => (name) => {
       return state.players.find(player => player.name === name)
     },
   },
 
   mutations: {
-    setGameCode(state) {
-      state.gameCode = randomstring.generate(5);
+    startGame: state => state.gameInProgress = true,
+
+    setGameCode(state, gameCode) {
+      if (gameCode) {
+        state.gameCode = gameCode
+      } else {
+        state.gameCode = randomstring.generate(5);
+      }
     },
 
-    addPlayer(state, name) {
-      state.players.push(new Player(name))
-    },
+    addPlayer: (state, name) => state.players.push(new Player(name)),
 
     // this should get broken into new pieces
     endTurn(state, score) {
@@ -55,21 +57,20 @@ export default new Vuex.Store({
           player.onBoardYet = true
         }
         player.score += score
+        // check for 10,000 to start 'theFinalRound'
+        // check for winner (last person to go in 'theFinalRound')
+        // if above is n/a, move to next player
       }
     }
   },
 
   actions: {
-    setGameCode(state) {
-      state.commit('setGameCode')
-    },
+    setGameCode: (state, gameCode) => state.commit('setGameCode', gameCode),
 
-    endTurn(state, score) {
-      state.commit('endTurn', score)
-    },
+    endTurn: (state, score) => state.commit('endTurn', score),
 
-    addPlayer(state, name) {
-      state.commit('addPlayer', name)
-    }
+    addPlayer: (state, name) => state.commit('addPlayer', name),
+
+    startGame: (state) => state.commit('startGame'),
   },
 })

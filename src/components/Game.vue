@@ -1,27 +1,68 @@
 <template>
   <div>
-    <h1>in the game component</h1>
-    <addPlayer></addPlayer>
+    <p>Game Code: {{getGameCode}}</p>
+    <addPlayer v-if="!gameInProgress"></addPlayer>
+    <p
+      class="player"
+      :class="{'current-player': checkCurrent(player.name)}"
+      v-for="player in players" v-bind:key="player.name">
+      {{player.name}} : {{player.score}}
+    </p>
 
-    <h2 v-if="currentPlayer && gameInProgress">Current Turn: {{currentPlayer.name}}</h2>
+    <b-button @click="handleStartGame" v-if="!gameInProgress">Start Game</b-button>
 
-    <ul>
-      <li v-for="player in players" v-bind:key="player.name">{{player.name}}</li>
-    </ul>
+    <gameBoard v-if="gameInProgress"></gameBoard>
   </div>
 </template>
 
 <script>
 import addPlayer from './addPlayer.vue'
-import { mapGetters } from 'vuex'
+import gameBoard from './gameBoard.vue'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
-    addPlayer
+    addPlayer,
+    gameBoard
+  },
+
+  created() {
+    if (!this.getGameCode) {
+      this.setGameCode(this.$route.params.gameCode)
+    }
+  },
+
+  methods: {
+    ...mapActions(['setGameCode', 'startGame']),
+
+    handleStartGame() {
+      this.startGame()
+    },
+
+    checkCurrent(name) {
+      return name === this.currentPlayer.name
+    }
   },
 
   computed: {
-    ...mapGetters(['players', 'currentPlayer', 'gameInProgress'])
+    ...mapGetters([
+      'players',
+      'currentPlayer',
+      'gameInProgress',
+      'getGameCode'
+    ])
   }
 }
 </script>
+
+<style>
+  .player {
+    text-align: left;
+    margin: 0px 5px;
+  }
+
+  .current-player {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+</style>
